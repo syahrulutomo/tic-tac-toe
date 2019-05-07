@@ -18,7 +18,7 @@ export default class Board extends React.Component {
           children.push(this.renderSquare(counter));
           counter++;
         }
-        board.push(<div className="board-row"></div>);
+        board.push(<div key={x} className="board-row"></div>);
         board.push(children);
         
       }

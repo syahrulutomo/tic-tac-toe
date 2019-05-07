@@ -28,9 +28,13 @@ export default class Game extends React.Component {
           history: [{
               squares: Array(9).fill(null),
           }],
+          sort: true,
           stepNumber: 0,
           xIsNext: true,
         };
+        this.getLocation = this.getLocation.bind(this);
+        this.handleSort = this.handleSort.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
     
     getLocation(move) {
@@ -49,6 +53,12 @@ export default class Game extends React.Component {
       return locationMap[move];
     }
 
+    handleSort() {
+        this.setState({
+          history: this.state.history.reverse(),
+        })
+    }
+
     handleClick(i) {
       const history = this.state.history.slice(0, this.state.stepNumber + 1);
       const current = history[history.length - 1];
@@ -61,8 +71,9 @@ export default class Game extends React.Component {
         history: history.concat([{
           squares: squares,
           currentLocation: this.getLocation(i),
+          step: this.state.history.length,
         }]),
-        stepNumber: history.length,
+        stepNumber: this.state.history.length,
         xIsNext: !this.state.xIsNext,
       });
     }
@@ -79,14 +90,16 @@ export default class Game extends React.Component {
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
 
+      console.log(this.state.history);
+
       const moves = history.map((step,move) => {
         const currentLocation = step.currentLocation ? `(${step.currentLocation})` : '';
-        const desc = move ? 'Go to move #' + move : 'Go to game start';
+        const desc = !step.step ? 'Start the game' : 'Move #'+step.step;
         const classButton = move === this.state.stepNumber ? 'button__bold' : '';
 
         return (
           <li key={ move }>
-            <button className={ classButton } onClick={() => this.jumpTo(move)}>{`${desc} ${currentLocation}`}</button>
+            <button className={ classButton } onClick={() => this.jumpTo(move)}>{` ${desc} ${currentLocation}`}</button>
           </li>
         )
       });
@@ -108,6 +121,7 @@ export default class Game extends React.Component {
           </div>
           <div className="game-info">
             <div>{status}</div>
+            <button onClick={this.handleSort}>Sort</button>
             <ol>{moves}</ol>
           </div>
         </div>
